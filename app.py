@@ -69,7 +69,9 @@ app = Flask(__name__, template_folder='templates')
 @app.route('/')
 def index():
     maze = create_maze(5)
-    return render_template('index.html', maze=maze)
+    testSolution = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (1, 4), (2, 4), (2, 3), (2, 2), (3, 2), (4, 2)]
+    # the solution is a list of tuples, each tuple is a coordinate of the maze (x, y)
+    return render_template('index.html', maze=maze, solution=testSolution)
 
 if __name__ == '__main__':
     app.run(debug=True)
