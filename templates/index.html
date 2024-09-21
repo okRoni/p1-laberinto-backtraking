@@ -1,13 +1,23 @@
 <!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    <h1>Welcome to Flask!</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laberintou</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />    
+  </head>
+  <body>
+    
+    <div class="maze">
+      {% for line in maze %}
+      <div class="maze-line">
+        {% for cell in line %}
+        <div class="cell {% if cell.up %}up{% endif %} {% if cell.down %}down{% endif %} {% if cell.left %}left{% endif %} {% if cell.right %}right{% endif %}"></div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+
+  </body>
 </html>

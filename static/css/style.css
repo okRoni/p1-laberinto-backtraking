@@ -1,4 +1,12 @@
 /* static/css/style.css */
+
+/* variables */
+:root {
+    --maze-border-color: #333;
+    --maze-border-width: 5px;
+    --cell-size: 50px;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
@@ -8,4 +16,44 @@ body {
 
 h1 {
     color: #333;
+}
+
+/* styles for the cells in the maze */
+.maze {
+    width: fit-content;
+    height: fit-content;
+    flex-wrap: wrap;
+    margin: auto;
+    padding: 20px;
+    background-color: rgb(131, 196, 131);
+}
+
+.maze-line {
+    display: flex;
+    background-color: rgb(194, 122, 122);
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border: var(--maze-border-width) solid var(--maze-border-color);
+    background-color: rgb(172, 205, 255);
+    margin: 0; /* Remove margin */
+    padding: 0; /* Remove padding */
+}
+
+.cell.up {
+    border-top-color: transparent;
+}
+
+.cell.right {
+    border-right-color: transparent;
+}
+
+.cell.down {
+    border-bottom-color: transparent;
+}
+
+.cell.left {
+    border-left-color: transparent;
 }
