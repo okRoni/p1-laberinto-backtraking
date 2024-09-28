@@ -1,6 +1,6 @@
 from __future__ import annotations
 from os import path, mkdir
-from Cell import Cell
+from .Cell import Cell
 
 
 class Maze:
