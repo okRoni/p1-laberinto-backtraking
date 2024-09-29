@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import random
+import threading
+import time
 from src.Maze import Maze
 
 # FOR TESTING PURPOSES!!
@@ -69,16 +71,29 @@ def create_maze(size):
 # THE REAL DEAL
 
 app = Flask(__name__, template_folder='templates')
+maze = create_maze(5)
+testSolution = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
+                (1, 4), (2, 4), (2, 3), (2, 2), (3, 2), (4, 2)]
 
+def update_solution():
+    global testSolution
+    while True:
+        # Update the testSolution with new coordinates
+        testSolution = [(random.randint(0, 4), random.randint(0, 4)) for _ in range(10)]
+        time.sleep(0.016)  # Wait for 5 seconds before updating again
+
+@app.route('/rendermaze', methods=['GET', 'POST'])
+def render_maze():
+    return render_template('maze.html', maze=maze, solution=testSolution)
 
 @app.route('/')
 def index():
-    maze = create_maze(5)
-    testSolution = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
-                    (1, 4), (2, 4), (2, 3), (2, 2), (3, 2), (4, 2)]
     # the solution is a list of tuples, each tuple is a coordinate of the maze (x, y)
-    return render_template('index.html', maze=maze, solution=testSolution)
-
+    return render_template('index.html')
 
 if __name__ == '__main__':
+    thread = threading.Thread(target=update_solution)
+    thread.daemon = True
+    thread.start()
     app.run(debug=True)
+

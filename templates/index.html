@@ -6,30 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laberintou</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />    
+    <script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ" crossorigin="anonymous"></script>
   </head>
   <body>
     
-    <div class="maze">
-      {% for line in maze %}
-      {% set y = loop.index0 %}
-      <div class="maze-line">
-        {% for cell in line %}
-        <div class="cell
-          {% if cell.up %}up {% endif %} 
-          {% if cell.down %}down {% endif %}
-          {% if cell.left %}left {% endif %}
-          {% if cell.right %}right {% endif %}">
-          
-          {% set x = loop.index0 %}
-          {% if (x, y) in solution %}
-            <div class="path"></div>
-          {% endif %}
+    <h1>Laberintou</h1>
+    <p>An amazing maze generator and solver</p>
 
-        </div>
-        {% endfor %}
-      </div>
-      {% endfor %}
-    </div>
+    <div hx-get= "{{ url_for('render_maze') }}" hx-trigger="every 0.016s" hx-swap="innerHTML"> </div>
 
   </body>
 </html>
