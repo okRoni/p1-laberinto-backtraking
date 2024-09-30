@@ -5,12 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laberintou</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-    <script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/maze.js') }}" defer></script>
   </head>
   <body>
-    <h1>Laberintou</h1>
-    <p>An amazing maze generator and solver</p>
+    <div class="header">
+      <input type="text" id="maze-name" placeholder="Enter maze name">
+      <button onclick="saveMaze()">Save Maze</button>
+      <button onclick="openLoadModal()">Load Maze</button>
+    </div>
     <div class="maze-container"></div>
+
+    <!-- Modal for loading mazes -->
+    <div id="load-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeLoadModal()">&times;</span>
+        <h2>Select a Maze to Load</h2>
+        <div id="saved-mazes"><div>
+      </div>
+    </div>
   </body>
 </html>
