@@ -14,6 +14,8 @@ class Cell:
         self.row: int = row
         self.column: int = column
         self.visited: bool = False
+        self.previous: Cell | None = None
+        self.location: tuple[int, int] | None = None
 
     def connect_up(self, cell: Cell) -> None:
         self.up = cell
