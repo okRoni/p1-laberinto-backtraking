@@ -1,19 +1,16 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Laberintou</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
     <script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/maze.js') }}" defer></script>
   </head>
   <body>
-    
     <h1>Laberintou</h1>
     <p>An amazing maze generator and solver</p>
-
-    <div class="maze-container" hx-get= "{{ url_for('render_maze') }}" hx-trigger="every 0.016s" hx-swap="innerHTML"> </div>
-
+    <div class="maze-container"></div>
   </body>
 </html>
