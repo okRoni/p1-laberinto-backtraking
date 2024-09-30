@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', renderMaze);
+document.addEventListener('DOMContentLoaded', () => {
+    renderMaze();
+    listMazes();
+});
 
 // Update the maze in the maze-container element
 function renderMaze() {
@@ -39,4 +42,81 @@ function renderMaze() {
         container.innerHTML = '';
         container.appendChild(mazeElement);
     });
+}
+
+function saveMaze() {
+    const mazeName = document.getElementById('maze-name').value;
+    fetch('/savemaze', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: mazeName })
+        // gracias Dios por haberme hecho trabajar en una REST API este semestre
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            listMazes();
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function loadMaze() {
+    const mazeName = document.getElementById('maze-name').value;
+    fetch('/loadmaze', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: mazeName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            renderMaze();
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function listMazes() {
+    fetch('/listmazes')
+    .then(response => response.json())
+    .then(data => {
+        const savedMazesList = document.getElementById('saved-mazes');
+        savedMazesList.innerHTML = '';
+        for (let i = 0; i < data.mazes.length; i++) {
+            const maze = data.mazes[i];
+            const buttonItem = document.createElement('button');
+            buttonItem.textContent = maze;
+            buttonItem.classList.add('saved-maze-button');
+            buttonItem.onclick = () => {
+                document.getElementById('maze-name').value = maze;
+                loadMaze();
+                closeLoadModal();
+            };
+            savedMazesList.appendChild(buttonItem);
+        }
+    });
+}
+
+function openLoadModal() {
+    document.getElementById('load-modal').style.display = 'block';
+    listMazes();
+}
+
+function closeLoadModal() {
+    document.getElementById('load-modal').style.display = 'none';
+}
+
+// Close the modal when the user clicks outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('load-modal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
 }
