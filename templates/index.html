@@ -13,7 +13,7 @@
     <h1>Laberintou</h1>
     <p>An amazing maze generator and solver</p>
 
-    <div hx-get= "{{ url_for('render_maze') }}" hx-trigger="every 0.016s" hx-swap="innerHTML"> </div>
+    <div class="maze-container" hx-get= "{{ url_for('render_maze') }}" hx-trigger="every 0.016s" hx-swap="innerHTML"> </div>
 
   </body>
 </html>
