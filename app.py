@@ -9,33 +9,7 @@ from src.Maze import Maze
 # it works by errasing the walls when one of the attributes is None
 # just be sure to pass a matrix of cells to the reder_template function
 
-
-class cell:
-    def __init__(self, up=None, down=None, left=None, right=None):
-        self.up = up
-        self.down = down
-        self.left = left
-        self.right = right
-
-    def connectUp(self, section):
-        self.up = section
-        section.down = self
-
-    def connectDown(self, section):
-        self.down = section
-        section.up = self
-
-    def connectLeft(self, section):
-        self.left = section
-        section.right = self
-
-    def connectRight(self, section):
-        self.right = section
-        section.left = self
-
 # generate random maze
-
-
 def create_maze(size):
     maze: Maze = Maze(size=size, name='test')
     for i in range(size):
@@ -86,4 +60,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
-

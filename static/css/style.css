@@ -22,11 +22,13 @@ h1 {
 .maze-container {
     justify-content: center;
     align-items: center;
-    width: 650px;
-    height: 650px;
+    width: 700px;
+    height: 100%;
+    aspect-ratio: 1;
     margin: auto;
     padding: 20px;
     background-color: bisque;
+    box-sizing: border-box;
 }
 
 /* one of these inside the maze-container */
