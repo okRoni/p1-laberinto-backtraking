@@ -10,6 +10,8 @@ class Cell:
         self.left: Cell | None = None
         self.right: Cell | None = None
         self.visited: bool = False
+        self.previous: Cell | None = None
+        self.location: tuple[int, int] | None = None
 
     def connect_up(self, cell: Cell) -> None:
         self.up = cell
