@@ -3,8 +3,8 @@
 /* variables */
 :root {
     --maze-border-color: #333;
-    --maze-border-width: 5px;
-    --cell-size: 50px;
+    --maze-border-width: 2px;
+    --cell-min-size: 8px;
 }
 
 body {
@@ -19,30 +19,48 @@ h1 {
 }
 
 /* styles for the cells in the maze */
-.maze {
-    width: fit-content;
-    height: fit-content;
-    flex-wrap: wrap;
+.maze-container {
+    justify-content: center;
+    align-items: center;
+    width: 700px;
+    height: 100%;
+    aspect-ratio: 1;
     margin: auto;
     padding: 20px;
-    background-color: rgb(131, 196, 131);
+    background-color: bisque;
+    box-sizing: border-box;
 }
 
+/* one of these inside the maze-container */
+.maze {
+    display: flex;
+    flex: 1 1 auto;
+    height: 100%;
+    flex-wrap: wrap;
+    padding: 20px;
+    background-color: rgb(131, 196, 131);
+    box-sizing: border-box;
+}
+
+/* multiples of this inside one maze */
 .maze-line {
+    flex: 1 1 auto;
+    width: 100%;
     display: flex;
     background-color: rgb(194, 122, 122);
 }
 
+/* multiples of this inside one maze-line */
 .cell {
-    display: flex;
+    flex: 1 1 auto;
+    display: flex; 
     justify-content: center;
     align-items: center;
-    width: var(--cell-size);
-    height: var(--cell-size);
     border: var(--maze-border-width) solid var(--maze-border-color);
-    background-color: rgb(172, 205, 255);
-    margin: 0; /* Remove margin */
-    padding: 0; /* Remove padding */
+    box-sizing: border-box;
+    background-color: #fff;
+    min-width: var(--cell-min-size);
+    min-height: var(--cell-min-size);
 }
 
 .cell.up {
@@ -61,11 +79,10 @@ h1 {
     border-left-color: transparent;
 }
 
+/* one of these inside a cell */
 .path {
     background-color: red;
-    /* center and smaller than parent*/
-    width: calc(var(--cell-size) * 0.8);
-    height: calc(var(--cell-size) * 0.8);
-    margin: auto;
-    border-radius: calc(var(--cell-size) * 0.4);
+    width: 50%;
+    height: 50%;
+    border-radius: 9999px;
 }
