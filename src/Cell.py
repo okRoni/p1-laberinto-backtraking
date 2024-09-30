@@ -1,14 +1,18 @@
 from __future__ import annotations
-
+import random
 
 class Cell:
     """Class that represents a cell of a maze."""
 
-    def __init__(self) -> None:
+    def __init__(self, row, column) -> None:
+        # avaiable paths
         self.up: Cell | None = None
         self.down: Cell | None = None
         self.left: Cell | None = None
         self.right: Cell | None = None
+        # position in the matrix
+        self.row: int = row
+        self.column: int = column
         self.visited: bool = False
 
     def connect_up(self, cell: Cell) -> None:
@@ -26,6 +30,19 @@ class Cell:
     def connect_right(self, cell: Cell) -> None:
         self.right = cell
         cell.left = self
+
+    def connect(self, cell: Cell) -> None:
+        """Checks what direction the cell is in and connects it to the cell."""
+        if cell.row == self.row:
+            if cell.column == self.column - 1:
+                self.connect_left(cell)
+            elif cell.column == self.column + 1:
+                self.connect_right(cell)
+        elif cell.column == self.column:
+            if cell.row == self.row - 1:
+                self.connect_up(cell)
+            elif cell.row == self.row + 1:
+                self.connect_down(cell)
 
     def __str__(self) -> str:
         """

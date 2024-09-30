@@ -8,6 +8,7 @@ function renderMaze() {
     fetch('/rendermaze')
     .then(response => response.json())
     .then(data => {
+        console.log('printieando el maze');
         const container = document.querySelector('.maze-container');
         const mazeData = data.maze;
         const mazeElement = document.createElement('div');
@@ -40,6 +41,25 @@ function renderMaze() {
     
         container.innerHTML = '';
         container.appendChild(mazeElement);
+    });
+}
+
+function generateMaze() {
+    const size = document.getElementById('maze-size').value;
+    fetch('/generatemaze', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ size: size })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            renderMaze();
+        } else {
+            alert(data.message);
+        }
     });
 }
 

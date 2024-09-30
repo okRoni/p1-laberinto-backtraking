@@ -3,28 +3,11 @@ import random
 import os
 from src.Maze import Maze
 
+
 app = Flask(__name__, template_folder='templates')
 
-def create_maze(size):
-    maze: Maze = Maze(size=size, name='test')
-    for i in range(size):
-        for j in range(size):
-            if i > 0 and random.randint(0, 1) == 0:
-                maze[i][j].connect_up(maze[i-1][j])
-            if i < size-1 and random.randint(0, 1) == 0:
-                maze[i][j].connect_down(maze[i+1][j])
-            if j > 0 and random.randint(0, 1) == 0:
-                maze[i][j].connect_left(maze[i][j-1])
-            if j < size-1 and random.randint(0, 1) == 0:
-                maze[i][j].connect_right(maze[i][j+1])
-    return maze
-
-maze = create_maze(12)
-# test in (i, j) format, where i is the row and j is the column.
-testSolution = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
-                (1, 4), (2, 4), (2, 3), (2, 2), (3, 2), (4, 2)]
-for i in range(len(testSolution)):
-    maze[testSolution[i][0]][testSolution[i][1]].visited = True
+maze : Maze = Maze(15, 'maze')
+maze.generate_maze()
 
 @app.route('/rendermaze', methods=['GET'])
 def render_maze():
@@ -60,6 +43,17 @@ def list_mazes():
     mazes_dir = 'src/mazes'
     mazes = [f.split('.')[0] for f in os.listdir(mazes_dir) if f.endswith('.txt')]
     return jsonify({'mazes': mazes})
+
+@app.route('/generatemaze', methods=['POST'])
+def generate_maze():
+    global maze
+    maze_size = request.json.get('size')
+    maze = Maze(int(maze_size), 'maze')
+    maze.generate_maze()
+    if maze_size is None or int(maze_size) < 1:
+        return jsonify({'status': 'error', 'message': 'Invalid maze size.'})
+
+    return jsonify({'status': 'success', 'message': 'Maze generated successfully.'})
 
 @app.route('/')
 def index():
