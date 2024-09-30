@@ -46,6 +46,16 @@ function renderMaze() {
 
 function generateMaze() {
     const size = document.getElementById('maze-size').value;
+    try {
+        size = parseInt(size);
+    } catch (e) {
+        alert('El tamaño del laberinto debe ser un número');
+        return;
+    }
+    if (size < 3 || size > 50) {
+        alert('El tamaño del laberinto debe estar entre 3 y 50');
+        return;
+    }
     fetch('/generatemaze', {
         method: 'POST',
         headers: {
