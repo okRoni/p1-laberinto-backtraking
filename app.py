@@ -20,8 +20,11 @@ def create_maze(size):
     return maze
 
 maze = create_maze(12)
+# test in (i, j) format, where i is the row and j is the column.
 testSolution = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
                 (1, 4), (2, 4), (2, 3), (2, 2), (3, 2), (4, 2)]
+for i in range(len(testSolution)):
+    maze[testSolution[i][0]][testSolution[i][1]].visited = True
 
 @app.route('/rendermaze', methods=['GET'])
 def render_maze():
@@ -29,9 +32,10 @@ def render_maze():
         'up': cell.up is not None,
         'down': cell.down is not None,
         'left': cell.left is not None,
-        'right': cell.right is not None
+        'right': cell.right is not None,
+        'visited': cell.visited
     } for cell in row] for row in maze.cell_matrix]
-    return jsonify({'maze': maze_data, 'solution': testSolution})
+    return jsonify({'maze': maze_data})
 
 @app.route('/savemaze', methods=['POST'])
 def save_maze():

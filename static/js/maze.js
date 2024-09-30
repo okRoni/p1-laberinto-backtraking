@@ -10,7 +10,6 @@ function renderMaze() {
     .then(data => {
         const container = document.querySelector('.maze-container');
         const mazeData = data.maze;
-        const solution = data.solution;
         const mazeElement = document.createElement('div');
         mazeElement.classList.add('maze');
     
@@ -27,7 +26,7 @@ function renderMaze() {
                 if (cell.left) cellElement.classList.add('left');
                 if (cell.right) cellElement.classList.add('right');
     
-                if (solution.some(([sx, sy]) => sx === x && sy === y)) {
+                if (cell.visited) {
                     const pathElement = document.createElement('div');
                     pathElement.classList.add('path');
                     cellElement.appendChild(pathElement);
