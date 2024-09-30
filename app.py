@@ -1,40 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import random
+import os
 from src.Maze import Maze
 
-# FOR TESTING PURPOSES!!
-
-# this class is only for testing!!, not the final version, it can be changed :)
-# for it to be rendered in the html it just needs to have the up, down, left and right attributes
-# it works by errasing the walls when one of the attributes is None
-# just be sure to pass a matrix of cells to the reder_template function
-
-
-class cell:
-    def __init__(self, up=None, down=None, left=None, right=None):
-        self.up = up
-        self.down = down
-        self.left = left
-        self.right = right
-
-    def connectUp(self, section):
-        self.up = section
-        section.down = self
-
-    def connectDown(self, section):
-        self.down = section
-        section.up = self
-
-    def connectLeft(self, section):
-        self.left = section
-        section.right = self
-
-    def connectRight(self, section):
-        self.right = section
-        section.left = self
-
-# generate random maze
-
+app = Flask(__name__, template_folder='templates')
 
 def create_maze(size):
     maze: Maze = Maze(size=size, name='test')
@@ -48,37 +17,53 @@ def create_maze(size):
                 maze[i][j].connect_left(maze[i][j-1])
             if j < size-1 and random.randint(0, 1) == 0:
                 maze[i][j].connect_right(maze[i][j+1])
-
-    # print formated maze
-    for i in range(size):
-        for j in range(size):
-            print(f'[{i}][{j}]', end=' ')
-            if maze[i][j].up is not None:
-                print('U', end=' ')
-            if maze[i][j].down is not None:
-                print('D', end=' ')
-            if maze[i][j].left is not None:
-                print('L', end=' ')
-            if maze[i][j].right is not None:
-                print('R', end=' ')
-        print('\n')
-
     return maze
 
+maze = create_maze(12)
+# test in (i, j) format, where i is the row and j is the column.
+testSolution = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
+                (1, 4), (2, 4), (2, 3), (2, 2), (3, 2), (4, 2)]
+for i in range(len(testSolution)):
+    maze[testSolution[i][0]][testSolution[i][1]].visited = True
 
-# THE REAL DEAL
+@app.route('/rendermaze', methods=['GET'])
+def render_maze():
+    maze_data = [[{
+        'up': cell.up is not None,
+        'down': cell.down is not None,
+        'left': cell.left is not None,
+        'right': cell.right is not None,
+        'visited': cell.visited
+    } for cell in row] for row in maze.cell_matrix]
+    return jsonify({'maze': maze_data})
 
-app = Flask(__name__, template_folder='templates')
+@app.route('/savemaze', methods=['POST'])
+def save_maze():
+    maze_name = request.json.get('name')
+    if maze_name:
+        maze.name = maze_name
+        maze.store()
+        return jsonify({'status': 'success', 'message': 'Maze saved successfully.'})
+    return jsonify({'status': 'error', 'message': 'Error saving the maze.'})
 
+@app.route('/loadmaze', methods=['POST'])
+def load_maze():
+    maze_name = request.json.get('name')
+    if maze_name:
+        filepath = f'src/mazes/{maze_name}.txt'
+        maze.load(filepath)
+        return jsonify({'status': 'success', 'message': 'Maze loaded successfully.'})
+    return jsonify({'status': 'error', 'message': 'Error loading the maze.'})
+
+@app.route('/listmazes', methods=['GET'])
+def list_mazes():
+    mazes_dir = 'src/mazes'
+    mazes = [f.split('.')[0] for f in os.listdir(mazes_dir) if f.endswith('.txt')]
+    return jsonify({'mazes': mazes})
 
 @app.route('/')
 def index():
-    maze = create_maze(5)
-    testSolution = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4),
-                    (1, 4), (2, 4), (2, 3), (2, 2), (3, 2), (4, 2)]
-    # the solution is a list of tuples, each tuple is a coordinate of the maze (x, y)
-    return render_template('index.html', maze=maze, solution=testSolution)
-
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

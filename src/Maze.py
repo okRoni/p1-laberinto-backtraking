@@ -38,7 +38,7 @@ class Maze:
         if self.name == '':  # Can't store an unnamed maze.
             return
         maze_string = self.__str__()
-        folder: str = 'mazes'
+        folder: str = 'src/mazes' # accesed from app.py
         filename: str = self.name + '.txt'
         try:
             with open(path.join(folder, filename), 'w') as file:
