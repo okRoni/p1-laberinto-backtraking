@@ -4,14 +4,17 @@ from __future__ import annotations
 class Cell:
     """Class that represents a cell of a maze."""
 
-    def __init__(self) -> None:
+    def __init__(self, row: int, column: int) -> None:
+        # available paths
         self.up: Cell | None = None
         self.down: Cell | None = None
         self.left: Cell | None = None
         self.right: Cell | None = None
+        # position in the matrix
+        self.row: int = row
+        self.column: int = column
         self.visited: bool = False
         self.previous: Cell | None = None
-        self.location: tuple[int, int] | None = None
 
     def connect_up(self, cell: Cell) -> None:
         self.up = cell

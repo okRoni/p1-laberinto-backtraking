@@ -12,11 +12,12 @@ class Maze:
         self.end: Cell | None = None
         self.name: str = name
 
-    def __build_cell_matrix(self, size: int) -> None:
-        if size is None or not isinstance(size, int) or size < 1:
+    def __build_cell_matrix(self, size: int | None) -> None:
+        if size is None or size < 1:
             return
         self.cell_matrix: list[list[Cell]] = \
-            [[Cell() for _ in range(size)] for _ in range(size)]
+            [[Cell(row, column) for column in range(size)] for row in range(size)]
+
 
     def __getitem__(self, key: int) -> list[Cell]:
         return self.cell_matrix[key]
@@ -51,7 +52,7 @@ class Maze:
     def load(self, filepath: str) -> None:
         """Loads a maze from a .txt file."""
 
-        if not isinstance(filepath, str) or filepath == '':
+        if filepath == '':
             return
         raw_content: str = ''
         with open(filepath, 'r') as file:
@@ -74,6 +75,13 @@ class Maze:
                     cell.connect_down(self.cell_matrix[i + 1][j])
                 if raw_cell[3] == '1':
                     cell.connect_left(self.cell_matrix[i][j - 1])
+
+    def unmark_all_cells(self) -> None:
+        """Marks all cells as not visited."""
+
+        for row in self.cell_matrix:
+            for cell in row:
+                cell.visited = False
 
 
 # Tests
