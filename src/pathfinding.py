@@ -40,6 +40,7 @@ def get_routes_bt(maze: Maze, start: Location, end: Location) -> list[Route]:
     stack: list[tuple[Cell, Cell]] = [(maze[start[0]][start[1]], root_cell)]
     previous: Cell | None = None
 
+    # TODO: This sometimes returns duplicate routes. Check why.
     while stack != []:
         cell_pair: tuple[Cell, Cell] = stack.pop()
         cell: Cell = cell_pair[0]
@@ -97,23 +98,23 @@ def get_routes_bt(maze: Maze, start: Location, end: Location) -> list[Route]:
         cell.previous = previous
         previous = cell
 
-    maze.unmark_all_cells()
+    maze.unvisit_all()
     return routes
 
 
-m = Maze(3)
-m[0][0].connect_right(m[0][1])
-m[0][1].connect_right(m[0][2])
-m[0][2].connect_down(m[1][2])
-m[1][2].connect_down(m[2][2])
+# m = Maze(3)
+# m[0][0].connect_right(m[0][1])
+# m[0][1].connect_right(m[0][2])
+# m[0][2].connect_down(m[1][2])
+# m[1][2].connect_down(m[2][2])
 
-m[0][0].connect_down(m[1][0])
-m[1][0].connect_down(m[2][0])
-m[2][0].connect_right(m[2][1])
-m[2][1].connect_right(m[2][2])
+# m[0][0].connect_down(m[1][0])
+# m[1][0].connect_down(m[2][0])
+# m[2][0].connect_right(m[2][1])
+# m[2][1].connect_right(m[2][2])
 
-m[0][1].connect_down(m[1][1])
-m[1][1].connect_down(m[2][1])
+# m[0][1].connect_down(m[1][1])
+# m[1][1].connect_down(m[2][1])
 
-print(m)
-print(get_routes_bt(m, (0,0), (2,2)))
+# print(m)
+# print(get_routes_bt(m, (0,0), (2,2)))

@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import random
 
 class Cell:
     """Class that represents a cell of a maze."""
@@ -31,6 +31,20 @@ class Cell:
     def connect_right(self, cell: Cell) -> None:
         self.right = cell
         cell.left = self
+
+    def connect(self, cell: Cell) -> None:
+        """Checks what direction the cell is in and connects it to the cell."""
+        if cell.row == self.row:
+            if cell.column == self.column - 1:
+                self.connect_left(cell)
+            elif cell.column == self.column + 1:
+                self.connect_right(cell)
+        elif cell.column == self.column:
+            if cell.row == self.row - 1:
+                self.connect_up(cell)
+            elif cell.row == self.row + 1:
+                self.connect_down(cell)
+
 
     def __str__(self) -> str:
         """

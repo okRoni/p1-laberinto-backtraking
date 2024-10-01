@@ -45,7 +45,7 @@ function renderMaze() {
 }
 
 function generateMaze() {
-    const size = document.getElementById('maze-size').value;
+    let size = document.getElementById('maze-size').value;
     try {
         size = parseInt(size);
     } catch (e) {

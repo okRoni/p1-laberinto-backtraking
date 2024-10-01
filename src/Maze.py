@@ -15,7 +15,7 @@ class Maze:
         self.end: Cell | None = None
         self.name: str = name
 
-    def __build_cell_matrix(self, size: int) -> None:
+    def __build_cell_matrix(self, size: int | None) -> None:
         if size is None or not isinstance(size, int) or size < 1:
             return
         self.cell_matrix: list[list[Cell]] = \
