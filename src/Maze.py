@@ -1,7 +1,10 @@
 from __future__ import annotations
 from os import path, mkdir
 from .Cell import Cell
+import random
+import sys
 
+sys.setrecursionlimit(10**6)
 
 class Maze:
     """Class that represents a maze."""
@@ -12,12 +15,11 @@ class Maze:
         self.end: Cell | None = None
         self.name: str = name
 
-    def __build_cell_matrix(self, size: int | None) -> None:
-        if size is None or size < 1:
+    def __build_cell_matrix(self, size: int) -> None:
+        if size is None or not isinstance(size, int) or size < 1:
             return
         self.cell_matrix: list[list[Cell]] = \
             [[Cell(row, column) for column in range(size)] for row in range(size)]
-
 
     def __getitem__(self, key: int) -> list[Cell]:
         return self.cell_matrix[key]
@@ -52,7 +54,7 @@ class Maze:
     def load(self, filepath: str) -> None:
         """Loads a maze from a .txt file."""
 
-        if filepath == '':
+        if not isinstance(filepath, str) or filepath == '':
             return
         raw_content: str = ''
         with open(filepath, 'r') as file:
@@ -76,12 +78,61 @@ class Maze:
                 if raw_cell[3] == '1':
                     cell.connect_left(self.cell_matrix[i][j - 1])
 
-    def unmark_all_cells(self) -> None:
-        """Marks all cells as not visited."""
+    def generate_maze(self) -> None:
+        """Generates random paths in the blank maze."""
+        self.generate_with_dfs(self.cell_matrix[0][0])
+        self.unvisit_all()
+        self.add_extra_paths()
 
+    def generate_with_dfs(self, cell: Cell) -> None:
+        """Generates the maze base using DFS."""
+        cell.visited = True
+        next_cell : Cell = self.get_unvisited_neighbour(cell)
+
+        while next_cell is not None:
+            cell.connect(next_cell)
+            self.generate_with_dfs(next_cell)
+            next_cell = self.get_unvisited_neighbour(cell)
+    
+    def get_unvisited_neighbour(self, cell : Cell) -> Cell | None:
+        """Returns a random unvisited neighbour of the cell."""
+        if cell is None:
+            return None
+        neighbours: list[Cell] = []
+        cell_row: int = cell.row
+        cell_column: int = cell.column
+        
+        # Check neighbours in all directions (very ugly right now)
+        if cell_row > 0 and not self.cell_matrix[cell_row - 1][cell_column].visited:
+            neighbours.append(self.cell_matrix[cell_row - 1][cell_column])
+        if cell_column < len(self.cell_matrix) - 1 and not self.cell_matrix[cell_row][cell_column + 1].visited:
+            neighbours.append(self.cell_matrix[cell_row][cell_column + 1])
+        if cell_row < len(self.cell_matrix) - 1 and not self.cell_matrix[cell_row + 1][cell_column].visited:
+            neighbours.append(self.cell_matrix[cell_row + 1][cell_column])
+        if cell_column > 0 and not self.cell_matrix[cell_row][cell_column - 1].visited:
+            neighbours.append(self.cell_matrix[cell_row][cell_column - 1])
+        
+        #return the random neighbour
+        if len(neighbours) == 0:
+            return None
+        return random.choice(neighbours)
+    
+    def unvisit_all(self) -> None:
+        """Unvisits all cells in the maze."""
         for row in self.cell_matrix:
             for cell in row:
                 cell.visited = False
+
+    def add_extra_paths(self):
+        """Adds extra paths to the maze."""
+        quantity : int = len(self.cell_matrix)
+        for _ in range(quantity):
+            row : int = random.randint(1, len(self.cell_matrix) - 2)
+            column : int = random.randint(1, len(self.cell_matrix) - 2)
+            random_cell : Cell = self.cell_matrix[row][column]
+            random_neighbour : Cell = self.get_unvisited_neighbour(random_cell)
+            if random_neighbour:
+                random_cell.connect(random_neighbour)
 
 
 # Tests

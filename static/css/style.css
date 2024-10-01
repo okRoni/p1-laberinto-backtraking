@@ -2,14 +2,15 @@
 
 /* variables */
 :root {
-    --maze-border-color: #333;
+    --maze-background-color: #1b1b1b;
+    --maze-border-color: #e9e9e9;
     --maze-border-width: 2px;
     --cell-min-size: 8px;
 }
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #3f3f3f;
+    background-color: var(--maze-background-color);
     margin: 0;
     padding: 0;
 }
@@ -27,13 +28,12 @@ body {
 /* styles for the cells in the maze */
 .maze-container {
     justify-content: center;
+    display: flex;
     align-items: center;
-    width: 700px;
+    max-width: 700px;
     height: 100%;
     aspect-ratio: 1;
     margin: auto;
-    padding: 20px;
-    background-color: bisque;
     box-sizing: border-box;
 }
 
@@ -43,9 +43,8 @@ body {
     flex: 1 1 auto;
     height: 100%;
     flex-wrap: wrap;
-    padding: 20px;
-    background-color: rgb(131, 196, 131);
     box-sizing: border-box;
+    border: calc(var(--maze-border-width) / 2) solid var(--maze-border-color);
 }
 
 /* multiples of this inside one maze */
@@ -64,7 +63,7 @@ body {
     align-items: center;
     border: var(--maze-border-width) solid var(--maze-border-color);
     box-sizing: border-box;
-    background-color: #fff;
+    background-color: var(--maze-background-color);
     min-width: var(--cell-min-size);
     min-height: var(--cell-min-size);
 }
