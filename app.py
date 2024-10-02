@@ -52,8 +52,13 @@ def generate_maze():
     maze.generate_maze()
     if maze_size is None or int(maze_size) < 1:
         return jsonify({'status': 'error', 'message': 'Invalid maze size.'})
-    print(*get_routes_bt(maze, (0, 0), (maze_size - 1, maze_size - 1)), sep='\n')
     return jsonify({'status': 'success', 'message': 'Maze generated successfully.'})
+
+@app.route('/unvisitall', methods=['POST'])
+def unvisit_all_all():
+    global maze
+    maze.unvisit_all()
+    return jsonify({'status': 'success', 'message': 'All cells unvisited.'})
 
 @app.route('/solvebybruteforce', methods=['POST'])
 def solve_by_brute_force():
@@ -62,12 +67,12 @@ def solve_by_brute_force():
     end = (request.json.get('end')['row'], request.json.get('end')['column'])
     if start is None or end is None:
         return jsonify({'status': 'error', 'message': 'Invalid start or end cell.'})
-    print(start, end)
     routes = get_routes_bt(maze, start, end)
     if routes == []:
         return jsonify({'status': 'error', 'message': 'No routes found.'})
     maze.visitSolutionPath(routes[0])
     return jsonify({'status': 'success', 'message': 'Maze solved successfully.'})
+
 
 @app.route('/')
 def index():

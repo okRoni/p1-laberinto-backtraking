@@ -110,6 +110,7 @@ function showMenu(mouseX, mouseY, cellX, cellY) {
     startButton.addEventListener('click', () => {
         startPoint = { row: cellY, column: cellX };
         document.body.removeChild(menu);
+        unvisitALl();
         renderMaze();
     });
 
@@ -118,6 +119,7 @@ function showMenu(mouseX, mouseY, cellX, cellY) {
     endButton.addEventListener('click', () => {
         endPoint = { row: cellY, column: cellX };
         document.body.removeChild(menu);
+        unvisitALl();
         renderMaze();
     });
 
@@ -205,6 +207,23 @@ function listMazes() {
                 closeLoadModal();
             };
             savedMazesList.appendChild(buttonItem);
+        }
+    });
+}
+
+function unvisitALl() {
+    fetch('/unvisitall', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            renderMaze();
+        } else {
+            alert(data.message);
         }
     });
 }
