@@ -1,3 +1,7 @@
+let startPoint = null;
+let endPoint = null;
+// it would be a an object with row and column properties
+
 document.addEventListener('DOMContentLoaded', () => {
     renderMaze();
     listMazes();
@@ -8,18 +12,17 @@ function renderMaze() {
     fetch('/rendermaze')
     .then(response => response.json())
     .then(data => {
-        console.log('printieando el maze');
         const container = document.querySelector('.maze-container');
         const mazeData = data.maze;
         const mazeElement = document.createElement('div');
         mazeElement.classList.add('maze');
     
-        for (let y = 0; y < mazeData.length; y++) {
+        for (let row = 0; row < mazeData.length; row++) {
             const rowElement = document.createElement('div');
             rowElement.classList.add('maze-line');
     
-            for (let x = 0; x < mazeData[y].length; x++) {
-                const cell = mazeData[y][x];
+            for (let column = 0; column < mazeData[row].length; column++) {
+                const cell = mazeData[row][column];
                 const cellElement = document.createElement('div');
                 cellElement.classList.add('cell');
                 if (cell.up) cellElement.classList.add('up');
@@ -32,6 +35,20 @@ function renderMaze() {
                     pathElement.classList.add('path');
                     cellElement.appendChild(pathElement);
                 }
+
+                if (startPoint && startPoint.column === column && startPoint.row === row) {
+                    const startElement = document.createElement('div');
+                    startElement.classList.add('start');
+                    cellElement.appendChild(startElement);
+                }
+
+                if (endPoint && endPoint.column === column && endPoint.row === row) {
+                    const endElement = document.createElement('div');
+                    endElement.classList.add('end');
+                    cellElement.appendChild(endElement);
+                }
+
+                cellElement.addEventListener('click', (event) => handleCellClick(event, column, row));
     
                 rowElement.appendChild(cellElement);
             }
@@ -62,6 +79,65 @@ function generateMaze() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ size: size })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            renderMaze();
+        } else {
+            alert(data.message);
+        }
+    });
+}
+
+function handleCellClick(event, x, y) {
+    showMenu(event.clientX, event.clientY, x, y);
+}
+
+function showMenu(mouseX, mouseY, cellX, cellY) {
+    const existingMenu = document.querySelector('.menu');
+    if (existingMenu) {
+        document.body.removeChild(existingMenu);
+    }
+
+    const menu = document.createElement('div');
+    menu.classList.add('menu');
+    menu.style.left = `${mouseX}px`;
+    menu.style.top = `${mouseY}px`;
+
+    const startButton = document.createElement('button');
+    startButton.textContent = 'Set as Start';
+    startButton.addEventListener('click', () => {
+        startPoint = { row: cellY, column: cellX };
+        document.body.removeChild(menu);
+        renderMaze();
+    });
+
+    const endButton = document.createElement('button');
+    endButton.textContent = 'Set as End';
+    endButton.addEventListener('click', () => {
+        endPoint = { row: cellY, column: cellX };
+        document.body.removeChild(menu);
+        renderMaze();
+    });
+
+    menu.appendChild(startButton);
+    menu.appendChild(endButton);
+    document.body.appendChild(menu);
+}
+
+function solveMaze() {
+    if (!startPoint || !endPoint) {
+        alert('Please set both start and end points.');
+        return;
+    }
+
+    fetch('/solvebybruteforce', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ start: startPoint, end: endPoint })
     })
     .then(response => response.json())
     .then(data => {
