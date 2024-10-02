@@ -17,6 +17,7 @@ body {
 
 .header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     background-color: #272727;
@@ -25,15 +26,49 @@ body {
     margin-bottom: 20px;
 }
 
+.header button,
+.header select,
+.header input {
+    margin: 0 5px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #444;
+    color: white;
+    font-size: 14px;
+}
+
+.header button:hover,
+.header select:hover,
+.header input:hover {
+    background-color: #555;
+}
+
+.header button:focus,
+.header select:focus,
+.header input:focus {
+    outline: none;
+    border-color: #888;
+}
+
+#maze-size {
+    width: 40px;
+}
+
+#maze-name {
+    width: 100px;
+}
+
 /* styles for the cells in the maze */
 .maze-container {
     justify-content: center;
     display: flex;
     align-items: center;
-    max-width: 700px;
+    max-width: 800px;
     height: 100%;
     aspect-ratio: 1;
     margin: auto;
+    padding: 0px 20px;
     box-sizing: border-box;
 }
 
