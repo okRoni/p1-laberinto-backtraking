@@ -133,7 +133,7 @@ function solveMaze() {
         alert('Please set both start and end points.');
         return;
     }
-
+    unvisitALl();
     fetch('/solvebybruteforce', {
         method: 'POST',
         headers: {
