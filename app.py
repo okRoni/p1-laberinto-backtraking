@@ -7,6 +7,7 @@ from src.pathfinding import get_routes_bt
 app = Flask(__name__, template_folder='templates')
 
 maze : Maze = Maze(15, 'maze')
+routes : list[list[tuple[int, int]]] = []
 maze.generate_maze()
 
 @app.route('/rendermaze', methods=['GET'])
@@ -55,7 +56,7 @@ def generate_maze():
     return jsonify({'status': 'success', 'message': 'Maze generated successfully.'})
 
 @app.route('/unvisitall', methods=['POST'])
-def unvisit_all_all():
+def unvisit_all():
     global maze
     maze.unvisit_all()
     return jsonify({'status': 'success', 'message': 'All cells unvisited.'})
@@ -63,6 +64,7 @@ def unvisit_all_all():
 @app.route('/solvebybruteforce', methods=['POST'])
 def solve_by_brute_force():
     global maze
+    global routes
     start = (request.json.get('start')['row'], request.json.get('start')['column'])
     end = (request.json.get('end')['row'], request.json.get('end')['column'])
     if start is None or end is None:
@@ -70,8 +72,7 @@ def solve_by_brute_force():
     routes = get_routes_bt(maze, start, end)
     if routes == []:
         return jsonify({'status': 'error', 'message': 'No routes found.'})
-    maze.visitSolutionPath(routes[0])
-    return jsonify({'status': 'success', 'message': 'Maze solved successfully.'})
+    return jsonify({'status': 'success', 'solutions': routes})
 
 
 @app.route('/')

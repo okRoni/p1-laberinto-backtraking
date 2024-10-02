@@ -1,10 +1,13 @@
 let startPoint = null;
 let endPoint = null;
-// it would be a an object with row and column properties
+// start and end would be a an object with row and column properties
+let solutions = [];
+let solutionIndex = -1;
 
 document.addEventListener('DOMContentLoaded', () => {
     renderMaze();
     listMazes();
+    populateSolutionDropdown();
 });
 
 // Update the maze in the maze-container element
@@ -31,6 +34,13 @@ function renderMaze() {
                 if (cell.right) cellElement.classList.add('right');
     
                 if (cell.visited) {
+                    const pathElement = document.createElement('div');
+                    pathElement.classList.add('path');
+                    cellElement.appendChild(pathElement);
+                }
+
+                if (solutionIndex > -1 && 
+                    solutions[solutionIndex].some(([r, c]) => r === row && c === column)) {
                     const pathElement = document.createElement('div');
                     pathElement.classList.add('path');
                     cellElement.appendChild(pathElement);
@@ -110,7 +120,7 @@ function showMenu(mouseX, mouseY, cellX, cellY) {
     startButton.addEventListener('click', () => {
         startPoint = { row: cellY, column: cellX };
         document.body.removeChild(menu);
-        unvisitALl();
+        clearSolutions();
         renderMaze();
     });
 
@@ -119,7 +129,7 @@ function showMenu(mouseX, mouseY, cellX, cellY) {
     endButton.addEventListener('click', () => {
         endPoint = { row: cellY, column: cellX };
         document.body.removeChild(menu);
-        unvisitALl();
+        clearSolutions();
         renderMaze();
     });
 
@@ -133,7 +143,7 @@ function solveMaze() {
         alert('Please set both start and end points.');
         return;
     }
-    unvisitALl();
+    clearSolutions();
     fetch('/solvebybruteforce', {
         method: 'POST',
         headers: {
@@ -144,11 +154,36 @@ function solveMaze() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            renderMaze();
+            solutions = data.solutions;
+            solutionIndex = 0;
+            populateSolutionDropdown();
+            showSolution();
         } else {
             alert(data.message);
         }
     });
+}
+
+function populateSolutionDropdown() {
+    const solutionDropdown = document.getElementById('solution-dropdown');
+    solutionDropdown.innerHTML = '<option value="-1">No solution</option>';
+    if (solutions.length === 0) {
+        solutionDropdown.disabled = true;
+    }
+    solutionDropdown.disabled = false;
+    for (let i = 0; i < solutions.length; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `Solution ${i + 1}`;
+        solutionDropdown.appendChild(option);
+    }
+    solutionDropdown.value = solutionIndex;
+}
+
+function showSolution() {
+    const solutionDropdown = document.getElementById('solution-dropdown');
+    solutionIndex = parseInt(solutionDropdown.value);
+    renderMaze();
 }
 
 function saveMaze() {
@@ -211,21 +246,11 @@ function listMazes() {
     });
 }
 
-function unvisitALl() {
-    fetch('/unvisitall', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            renderMaze();
-        } else {
-            alert(data.message);
-        }
-    });
+function clearSolutions() {
+    solutionIndex = -1;
+    renderMaze();
+    solutions = [];
+    populateSolutionDropdown();
 }
 
 function openLoadModal() {
