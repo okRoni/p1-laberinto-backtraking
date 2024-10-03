@@ -113,15 +113,6 @@ function renderMaze() {
 
 function generateMaze() {
     let size = document.getElementById('maze-size').value;
-    size = parseInt(size);
-    if (isNaN(size)) {
-        alert('El tamaño del laberinto debe ser un número');
-        return;
-    }
-    if (size < 3 || size > 50) {
-        alert('El tamaño del laberinto debe estar entre 3 y 50');
-        return;
-    }
     fetch('/generatemaze', {
         method: 'POST',
         headers: {
@@ -136,6 +127,8 @@ function generateMaze() {
             renderMaze();
         } else {
             alert(data.message);
+            document.getElementById('maze-size').value = '';
+            document.getElementById('maze-size').focus();
         }
     });
 }
@@ -242,6 +235,8 @@ function saveMaze() {
             listMazes();
         } else {
             alert(data.message);
+            document.getElementById('maze-name').value = '';
+            document.getElementById('maze-name').focus();
         }
     });
 }
