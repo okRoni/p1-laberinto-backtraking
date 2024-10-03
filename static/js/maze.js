@@ -39,11 +39,51 @@ function renderMaze() {
                     cellElement.appendChild(pathElement);
                 }
 
-                if (solutionIndex > -1 && 
-                    solutions[solutionIndex].some(([r, c]) => r === row && c === column)) {
-                    const pathElement = document.createElement('div');
-                    pathElement.classList.add('path');
-                    cellElement.appendChild(pathElement);
+                // Check if the current cell is part of the solution
+                // If it is, add a correspoding path element to the cell
+                // depending of the direction based on the previous and next cells
+                if (solutionIndex > -1) {
+                    currentCellIndex = solutions[solutionIndex].slice(1, -1)
+                        .findIndex(cell => cell[0] === row && cell[1] === column) + 1;
+                        // we add 1 because the first cell is not part of the solution
+                    console.log(currentCellIndex); 
+                    if (currentCellIndex > 0) { // we skip the first cell
+                        // here we add 2 path elements to the cell
+                        // one for the previous cell and one for the next cell
+                        // this is to create the illusion of a continuous path
+                        const previousPathElement = document.createElement('div');
+                        previousPathElement.classList.add('path');
+                        previousPathElement.classList.add('previous-path');
+                        const nextPathElement = document.createElement('div');
+                        nextPathElement.classList.add('path');
+                        nextPathElement.classList.add('next-path');
+
+                        const previousCell = solutions[solutionIndex][currentCellIndex - 1];
+                        const nextCell = solutions[solutionIndex][currentCellIndex + 1];
+
+                        if (previousCell[0] === row && previousCell[1] === column - 1) {
+                            previousPathElement.classList.add('right-path');
+                        } else if (previousCell[0] === row && previousCell[1] === column + 1) {
+                            previousPathElement.classList.add('left-path');
+                        } else if (previousCell[0] === row - 1 && previousCell[1] === column) {
+                            previousPathElement.classList.add('up-path');
+                        } else if (previousCell[0] === row + 1 && previousCell[1] === column) {
+                            previousPathElement.classList.add('down-path');
+                        }
+
+                        if (nextCell[0] === row && nextCell[1] === column - 1) {
+                            nextPathElement.classList.add('right-path');
+                        } else if (nextCell[0] === row && nextCell[1] === column + 1) {
+                            nextPathElement.classList.add('left-path');
+                        } else if (nextCell[0] === row - 1 && nextCell[1] === column) {
+                            nextPathElement.classList.add('up-path');
+                        } else if (nextCell[0] === row + 1 && nextCell[1] === column) {
+                            nextPathElement.classList.add('down-path');
+                        }
+
+                        cellElement.appendChild(previousPathElement);
+                        cellElement.appendChild(nextPathElement);
+                    }
                 }
 
                 if (startPoint && startPoint.column === column && startPoint.row === row) {
@@ -73,9 +113,8 @@ function renderMaze() {
 
 function generateMaze() {
     let size = document.getElementById('maze-size').value;
-    try {
-        size = parseInt(size);
-    } catch (e) {
+    size = parseInt(size);
+    if (isNaN(size)) {
         alert('El tamaño del laberinto debe ser un número');
         return;
     }
@@ -93,6 +132,7 @@ function generateMaze() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            clearSolutions();
             renderMaze();
         } else {
             alert(data.message);
