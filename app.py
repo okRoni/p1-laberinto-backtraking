@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 import random
 import os
 from src.Maze import Maze
-from src.pathfinding import get_routes_bt
+from src.pathfinding import get_routes
 
 app = Flask(__name__, template_folder='templates')
 
@@ -52,7 +52,6 @@ def generate_maze():
     maze.generate_maze()
     if maze_size is None or int(maze_size) < 1:
         return jsonify({'status': 'error', 'message': 'Invalid maze size.'})
-    print(*get_routes_bt(maze, (0, 0), (maze_size - 1, maze_size - 1)), sep='\n')
     return jsonify({'status': 'success', 'message': 'Maze generated successfully.'})
 
 @app.route('/')

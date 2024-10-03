@@ -24,7 +24,19 @@ def unmark_route(maze: Maze, start: Location, end: Location) -> None:
         if cell.previous is not None:
             cell = cell.previous
 
-def get_routes_bt(maze: Maze, start: Location, end: Location) -> list[Route]:
+def printv(maze: Maze):
+    # Prints visited cells as a matrix. For testing purposes only.
+    for row in maze:
+        for cell in row:
+            if cell.visited:
+                print("* ", end='')
+            else:
+                print("- ", end='')
+        print()
+    print()
+
+def get_routes(maze: Maze, start: Location, end: Location,
+               enable_optimization: bool) -> list[Route]:
     """Returns all posible routes from start to end."""
 
     routes: list[Route] = []
@@ -38,17 +50,27 @@ def get_routes_bt(maze: Maze, start: Location, end: Location) -> list[Route]:
     # because cell A can be visited from multiple cells, for that reason
     # the cell B is used.
     stack: list[tuple[Cell, Cell]] = [(maze[start[0]][start[1]], root_cell)]
+    # Used as heuristic to implement A*.
+    def get_manhattan_distance(cell: Cell | None) -> int:
+        if cell is None:
+            return 0
+        return abs(cell.row - end[0]) + abs(cell.column - end[1])
     previous: Cell | None = None
-
+    printv(maze)
     # TODO: This sometimes returns duplicate routes. Check why.
     while stack != []:
         cell_pair: tuple[Cell, Cell] = stack.pop()
         cell: Cell = cell_pair[0]
         cell.visited = True
         cell_location: Location = (cell.row, cell.column)
+        printv(maze)
+
 
         if cell_location == end:
             routes.append(build_route(maze, end))
+            if enable_optimization:
+                maze.unvisit_all()
+                return routes  # In this case just one route is returned.
             if stack == []:
                 break
             # The cell in which a branch occurs.
@@ -59,31 +81,18 @@ def get_routes_bt(maze: Maze, start: Location, end: Location) -> list[Route]:
             continue
 
         has_move: bool = False
-        count = 0  # For debugging purposes
-        up: Cell | None = cell.up
-        if up is not None and not up.visited:
-            stack.append((up, cell))
-            up.previous = cell
-            has_move = True
-            count += 1
-        down: Cell | None = cell.down
-        if down is not None and not down.visited:
-            stack.append((down, cell))
-            down.previous = cell
-            has_move = True
-            count += 1
-        left: Cell | None = cell.left
-        if left is not None and not left.visited:
-            stack.append((left, cell))
-            left.previous = cell
-            has_move = True
-            count += 1
-        right: Cell | None = cell.right
-        if right is not None and not right.visited:
-            stack.append((right, cell))
-            right.previous = cell
-            has_move = True
-            count += 1
+        neighbors: list[Cell | None] = [cell.up, cell.right, cell.down, cell.left]
+        if enable_optimization:
+            neighbors.sort(key=get_manhattan_distance)
+        # Given that in a stack the first item pushed is popped last and viceversa,
+        # and bacause we need to preserve the neighbors insertion order when
+        # optimization is enabled, then the items are pushed in reverse order
+        # to counteract the stack's last-in-first-out behavior.
+        for neighbor in reversed(neighbors):
+            if neighbor is not None and not neighbor.visited:
+                stack.append((neighbor, cell))
+                neighbor.previous = cell
+                has_move = True
 
         if not has_move:
             if stack == []:
@@ -99,22 +108,9 @@ def get_routes_bt(maze: Maze, start: Location, end: Location) -> list[Route]:
         previous = cell
 
     maze.unvisit_all()
-    return routes
-
-
-# m = Maze(3)
-# m[0][0].connect_right(m[0][1])
-# m[0][1].connect_right(m[0][2])
-# m[0][2].connect_down(m[1][2])
-# m[1][2].connect_down(m[2][2])
-
-# m[0][0].connect_down(m[1][0])
-# m[1][0].connect_down(m[2][0])
-# m[2][0].connect_right(m[2][1])
-# m[2][1].connect_right(m[2][2])
-
-# m[0][1].connect_down(m[1][1])
-# m[1][1].connect_down(m[2][1])
-
-# print(m)
-# print(get_routes_bt(m, (0,0), (2,2)))
+    routes.sort(key=len)  # Sort found routes by ascending length.
+    unique_routes: list[Route] = []
+    for route in routes:  # Temporary (i hope) solution to duplicate routes.
+        if route not in unique_routes:
+            unique_routes.append(route)
+    return unique_routes
