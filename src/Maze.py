@@ -134,6 +134,12 @@ class Maze:
             if random_neighbour:
                 random_cell.connect(random_neighbour)
 
+    def visitSolutionPath(self, solution: list[tuple[int, int]]):
+        for location in solution:
+            self.cell_matrix[location[0]][location[1]].visited = True
+            
+            
+
 
 # Tests
 # m = Maze(size=3, name='maze1')

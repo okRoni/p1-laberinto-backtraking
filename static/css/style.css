@@ -17,6 +17,7 @@ body {
 
 .header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     background-color: #272727;
@@ -25,15 +26,49 @@ body {
     margin-bottom: 20px;
 }
 
+.header button,
+.header select,
+.header input {
+    margin: 5px 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #555;
+    color: white;
+    font-size: 14px;
+}
+
+.header button:hover,
+.header select:hover,
+.header input:hover {
+    background-color: #777;
+}
+
+.header button:focus,
+.header select:focus,
+.header input:focus {
+    outline: none;
+    border: 1px solid #888;
+}
+
+#maze-size {
+    width: 40px;
+}
+
+#maze-name {
+    width: 100px;
+}
+
 /* styles for the cells in the maze */
 .maze-container {
     justify-content: center;
     display: flex;
     align-items: center;
-    max-width: 700px;
+    max-width: 800px;
     height: 100%;
     aspect-ratio: 1;
     margin: auto;
+    padding: 0px 20px;
     box-sizing: border-box;
 }
 
@@ -57,6 +92,7 @@ body {
 
 /* multiples of this inside one maze-line */
 .cell {
+    position: relative;
     flex: 1 1 auto;
     display: flex; 
     justify-content: center;
@@ -85,11 +121,71 @@ body {
 }
 
 /* one of these inside a cell */
+
 .path {
+    position: absolute;
     background-color: red;
-    width: 50%;
-    height: 50%;
+}
+
+
+.path.up-path {
+    width: 35%;
+    height: 65%;
+    top: 0;
+    left: 32.5%;
     border-radius: 9999px;
+}
+
+.path.right-path {
+    width: 65%;
+    height: 35%;
+    top: 32.5%;
+    left: 0;
+    border-radius: 9999px;
+}
+
+.path.down-path {
+    width: 35%;
+    height: 65%;
+    bottom: 0;
+    left: 32.5%;
+    border-radius: 9999px;
+}
+
+.path.left-path {
+    width: 65%;
+    height: 35%;
+    top: 32.5%;
+    right: 0;
+    border-radius: 9999px;
+}
+
+.start {
+    background-color: rgb(104, 214, 104);
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+.end {
+    background-color: rgb(94, 173, 238);
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* Modal styles */
@@ -146,4 +242,22 @@ body {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+.menu {
+    position: absolute;
+
+    background: #444;
+    border: 1px solid black;
+    border-radius: 0px 10px 10px 10px;
+    padding: 5px;
+    z-index: 1000;
+}
+.menu button {
+    display: block;
+    border: none;
+    background: #666;
+    color: white;
+    margin: 5px auto;
+    border-radius: 5px;
 }
