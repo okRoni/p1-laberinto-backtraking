@@ -56,15 +56,13 @@ def get_routes(maze: Maze, start: Location, end: Location,
             return 0
         return abs(cell.row - end[0]) + abs(cell.column - end[1])
     previous: Cell | None = None
-    printv(maze)
+
     # TODO: This sometimes returns duplicate routes. Check why.
     while stack != []:
         cell_pair: tuple[Cell, Cell] = stack.pop()
         cell: Cell = cell_pair[0]
         cell.visited = True
         cell_location: Location = (cell.row, cell.column)
-        printv(maze)
-
 
         if cell_location == end:
             routes.append(build_route(maze, end))
