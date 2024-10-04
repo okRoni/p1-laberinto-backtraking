@@ -1,9 +1,9 @@
 from .Maze import Maze
 from .Cell import Cell
 
-Location = tuple[int, int]
-Route = list[Location]
-
+Location = tuple[int, int] # Location of a cell of the maze
+Route = list[Location] # Route between 2 given cells
+State = list[list[bool]] # For all cells, True for visited and False for not visited
 
 def build_route(maze: Maze, location: Location) -> Route:
     """Builds a route of the maze from the given location to the start."""
@@ -36,10 +36,14 @@ def printv(maze: Maze):
     print()
 
 def get_routes(maze: Maze, start: Location, end: Location,
-               enable_optimization: bool) -> list[Route]:
-    """Returns all posible routes from start to end."""
+               enable_optimization: bool) -> tuple[list[Route], list[State]]:
+    """
+    Returns a tuple containing all routes found from the given start to
+    given end and all states the maze was in during the path finding.
+    """
 
     routes: list[Route] = []
+    states: list[State] = [maze.get_state()]
     # This algorithm needs to know from which cell every cell is visited.
     # The root cell is defined just to be the cell from which the start
     # cell is visited.
@@ -62,13 +66,16 @@ def get_routes(maze: Maze, start: Location, end: Location,
         cell_pair: tuple[Cell, Cell] = stack.pop()
         cell: Cell = cell_pair[0]
         cell.visited = True
+        states.append(maze.get_state())
         cell_location: Location = (cell.row, cell.column)
+        cell.previous = previous
+        previous = cell
 
         if cell_location == end:
             routes.append(build_route(maze, end))
             if enable_optimization:
                 maze.unvisit_all()
-                return routes  # In this case just one route is returned.
+                return (routes, states)  # In this case just one route is returned.
             if stack == []:
                 break
             # The cell in which a branch occurs.
@@ -102,13 +109,24 @@ def get_routes(maze: Maze, start: Location, end: Location,
             previous = branch_cell
             continue
 
-        cell.previous = previous
-        previous = cell
-
     maze.unvisit_all()
     routes.sort(key=len)  # Sort found routes by ascending length.
     unique_routes: list[Route] = []
     for route in routes:  # Temporary (i hope) solution to duplicate routes.
         if route not in unique_routes:
             unique_routes.append(route)
-    return unique_routes
+
+    # debug test
+    # use only for small mazes, this can crash your pc
+    # for i in routes:
+    #     for j in i:
+    #         print(j, end='')
+    #     print()
+    # print()
+    # for state in states:
+    #     for row in state:
+    #         for item in row:
+    #             print('*' if item == True else '-', end='')
+    #         print()
+    #     print()
+    return (routes, states)

@@ -138,7 +138,10 @@ class Maze:
         for location in solution:
             self.cell_matrix[location[0]][location[1]].visited = True
             
-            
+    def get_state(self) -> list[list[bool]]:
+        """Returns a matrix of booleans representing the 'visited' atribute every cell."""
+
+        return [[cell.visited for cell in row] for row in self]
 
 
 # Tests
