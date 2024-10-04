@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 import random
 import os
 from src.Maze import Maze
-from src.pathfinding import get_routes_bt
+from src.pathfinding import get_routes
 
 app = Flask(__name__, template_folder='templates')
 
@@ -73,7 +73,7 @@ def solve_by_brute_force():
     end = (request.json.get('end')['row'], request.json.get('end')['column'])
     if start is None or end is None:
         return jsonify({'status': 'error', 'message': 'Invalid start or end cell.'})
-    routes = get_routes_bt(maze, start, end)
+    routes = get_routes(maze, start, end, False)
     if routes == []:
         return jsonify({'status': 'error', 'message': 'No routes found.'})
     return jsonify({'status': 'success', 'solutions': routes})
