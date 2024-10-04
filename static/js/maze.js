@@ -110,6 +110,11 @@ function renderMaze() {
     });
 }
 
+function clearStartEnd() {
+    startPoint = null;
+    endPoint = null;
+};
+
 function generateMaze() {
     let size = document.getElementById('maze-size').value;
     fetch('/generatemaze', {
@@ -122,6 +127,7 @@ function generateMaze() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            clearStartEnd();
             clearSolutions();
             renderMaze();
         } else {
