@@ -46,7 +46,6 @@ function renderMaze() {
                     currentCellIndex = solutions[solutionIndex].slice(1, -1)
                         .findIndex(cell => cell[0] === row && cell[1] === column) + 1;
                         // we add 1 because the first cell is not part of the solution
-                    console.log(currentCellIndex); 
                     if (currentCellIndex > 0) { // we skip the first cell
                         // here we add 2 path elements to the cell
                         // one for the previous cell and one for the next cell
@@ -177,12 +176,17 @@ function solveMaze() {
         return;
     }
     clearSolutions();
-    fetch('/solvebybruteforce', {
+    fetch('/solvemaze', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ start: startPoint, end: endPoint })
+        body: JSON.stringify(
+        { 
+            start: startPoint,
+            end: endPoint,
+            algorithm: document.getElementById('algorithm-dropdown').value
+        })
     })
     .then(response => response.json())
     .then(data => {

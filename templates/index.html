@@ -18,6 +18,10 @@
       <button onclick="generateMaze()">Generate</button>
       <button onclick="renderMaze()">Reload</button>
       <button onclick="solveMaze()">Solve</button>
+      <select id="algorithm-dropdown">
+        <option value="backtracking">Backtracking</option>
+        <option value="a-star">A*</option>
+      </select>
       <select id="solution-dropdown" onchange="showSolution()">
         <option value="">Solution</option>
       </select>
