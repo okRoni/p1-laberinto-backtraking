@@ -49,10 +49,13 @@ def list_mazes():
 def generate_maze():
     global maze
     maze_size = request.json.get('size')
+    if maze_size is None or not maze_size.isdigit():
+        return jsonify({'status': 'error', 'message': 'Invalid maze size.'})
+    maze_size = int(maze_size)
+    if maze_size < 5 or maze_size > 50:
+        return jsonify({'status': 'error', 'message': 'Maze size must be at least 5.'})
     maze = Maze(int(maze_size), 'maze')
     maze.generate_maze()
-    if maze_size is None or int(maze_size) < 1:
-        return jsonify({'status': 'error', 'message': 'Invalid maze size.'})
     return jsonify({'status': 'success', 'message': 'Maze generated successfully.'})
 
 @app.route('/unvisitall', methods=['POST'])
@@ -61,15 +64,20 @@ def unvisit_all():
     maze.unvisit_all()
     return jsonify({'status': 'success', 'message': 'All cells unvisited.'})
 
-@app.route('/solvebybruteforce', methods=['POST'])
+@app.route('/solvemaze', methods=['POST'])
 def solve_by_brute_force():
     global maze
     global routes
+    maze.unvisit_all()
     start = (request.json.get('start')['row'], request.json.get('start')['column'])
     end = (request.json.get('end')['row'], request.json.get('end')['column'])
+    algorithm = request.json.get('algorithm')
     if start is None or end is None:
         return jsonify({'status': 'error', 'message': 'Invalid start or end cell.'})
-    routes = get_routes(maze, start, end, False)
+    if algorithm == 'a-star':
+        routes = get_routes(maze, start, end, True)
+    else:
+        routes = get_routes(maze, start, end, False)
     if routes == []:
         return jsonify({'status': 'error', 'message': 'No routes found.'})
     return jsonify({'status': 'success', 'solutions': routes})

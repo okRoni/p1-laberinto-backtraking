@@ -9,13 +9,19 @@
   </head>
   <body>
     <div class="header">
-      <input type="text" id="maze-name" placeholder="Name">
+      <input type="text" id="maze-name" onclick="this.focus()" placeholder="Name"
+        autocomplete="off">
       <button onclick="saveMaze()">Save</button>
       <button onclick="openLoadModal()">Load</button>
-      <input type="text" id="maze-size" placeholder="Size">
+      <input type="text" id="maze-size" onclick="this.focus()" placeholder="Size"
+        autocomplete="off">
       <button onclick="generateMaze()">Generate</button>
       <button onclick="renderMaze()">Reload</button>
       <button onclick="solveMaze()">Solve</button>
+      <select id="algorithm-dropdown">
+        <option value="backtracking">Backtracking</option>
+        <option value="a-star">A*</option>
+      </select>
       <select id="solution-dropdown" onchange="showSolution()">
         <option value="">Solution</option>
       </select>

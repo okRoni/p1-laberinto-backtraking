@@ -46,7 +46,6 @@ function renderMaze() {
                     currentCellIndex = solutions[solutionIndex].slice(1, -1)
                         .findIndex(cell => cell[0] === row && cell[1] === column) + 1;
                         // we add 1 because the first cell is not part of the solution
-                    console.log(currentCellIndex); 
                     if (currentCellIndex > 0) { // we skip the first cell
                         // here we add 2 path elements to the cell
                         // one for the previous cell and one for the next cell
@@ -111,17 +110,13 @@ function renderMaze() {
     });
 }
 
+function clearStartEnd() {
+    startPoint = null;
+    endPoint = null;
+};
+
 function generateMaze() {
     let size = document.getElementById('maze-size').value;
-    size = parseInt(size);
-    if (isNaN(size)) {
-        alert('El tamaño del laberinto debe ser un número');
-        return;
-    }
-    if (size < 3 || size > 50) {
-        alert('El tamaño del laberinto debe estar entre 3 y 50');
-        return;
-    }
     fetch('/generatemaze', {
         method: 'POST',
         headers: {
@@ -132,10 +127,13 @@ function generateMaze() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            clearStartEnd();
             clearSolutions();
             renderMaze();
         } else {
             alert(data.message);
+            document.getElementById('maze-size').value = '';
+            document.getElementById('maze-size').focus();
         }
     });
 }
@@ -184,12 +182,17 @@ function solveMaze() {
         return;
     }
     clearSolutions();
-    fetch('/solvebybruteforce', {
+    fetch('/solvemaze', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ start: startPoint, end: endPoint })
+        body: JSON.stringify(
+        { 
+            start: startPoint,
+            end: endPoint,
+            algorithm: document.getElementById('algorithm-dropdown').value
+        })
     })
     .then(response => response.json())
     .then(data => {
@@ -242,6 +245,8 @@ function saveMaze() {
             listMazes();
         } else {
             alert(data.message);
+            document.getElementById('maze-name').value = '';
+            document.getElementById('maze-name').focus();
         }
     });
 }
