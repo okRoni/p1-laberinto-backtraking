@@ -3,7 +3,7 @@
 Clone the repository:
 
 ```shell
-git clone https://github.com/O-RONI/p1-laberinto-backtraking.git
+git clone https://github.com/OkRoni/p1-laberinto-backtraking.git
 ```
 
 Navigate into the project directory:
