@@ -335,6 +335,8 @@ function loadMaze() {
     .then(data => {
         if (data.status === 'success') {
             fetchAndUpdateMaze();
+            clearSolutions();
+            clearStartEnd();
             document.getElementById('process-button').disabled = true;
         } else {
             alert(data.message);
