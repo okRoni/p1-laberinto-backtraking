@@ -335,6 +335,7 @@ function loadMaze() {
     .then(data => {
         if (data.status === 'success') {
             fetchAndUpdateMaze();
+            document.getElementById('process-button').disabled = true;
         } else {
             alert(data.message);
         }
@@ -366,7 +367,9 @@ function clearSolutions() {
     solutionIndex = -1;
     renderMaze();
     solutions = [];
+    states = [];
     populateSolutionDropdown();
+    document.getElementById('process-button').disabled = true;
 }
 
 function openLoadModal() {
