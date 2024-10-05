@@ -10,12 +10,15 @@ class Maze:
     """Class that represents a maze."""
 
     def __init__(self, size: int | None = None, name: str = '') -> None:
+        """Initializes the object."""
+
         self.__build_cell_matrix(size)
         self.start: Cell | None = None
         self.end: Cell | None = None
         self.name: str = name
 
     def __build_cell_matrix(self, size: int | None) -> None:
+        """Initializes the matrix of cells."""
         if size is None or not isinstance(size, int) or size < 1:
             return
         self.cell_matrix: list[list[Cell]] = \
@@ -135,9 +138,11 @@ class Maze:
                 random_cell.connect(random_neighbour)
 
     def visitSolutionPath(self, solution: list[tuple[int, int]]):
+        """Change to True the 'visited' attribute of all the cells in the solution."""
+
         for location in solution:
             self.cell_matrix[location[0]][location[1]].visited = True
-            
+
     def get_state(self) -> list[list[bool]]:
         """Returns a matrix of booleans representing the 'visited' atribute every cell."""
 

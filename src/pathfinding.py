@@ -3,7 +3,6 @@ from .Cell import Cell
 
 Location = tuple[int, int] # Location of a cell of the maze
 Route = list[Location] # Route between 2 given cells
-State = list[list[bool]] # For all cells, True for visited and False for not visited
 
 def build_route(maze: Maze, location: Location) -> Route:
     """Builds a route of the maze from the given location to the start."""
@@ -36,14 +35,14 @@ def printv(maze: Maze):
     print()
 
 def get_routes(maze: Maze, start: Location, end: Location,
-               enable_optimization: bool) -> tuple[list[Route], list[State]]:
+               enable_optimization: bool) -> tuple[list[Route], list[Route]]:
     """
     Returns a tuple containing all routes found from the given start to
     given end and all states the maze was in during the path finding.
     """
 
     routes: list[Route] = []
-    states: list[State] = []
+    states: list[Route] = []
     # This algorithm needs to know from which cell every cell is visited.
     # The root cell is defined just to be the cell from which the start
     # cell is visited.
@@ -61,7 +60,6 @@ def get_routes(maze: Maze, start: Location, end: Location,
         return abs(cell.row - end[0]) + abs(cell.column - end[1])
     previous: Cell | None = None
 
-    # TODO: This sometimes returns duplicate routes. Check why.
     while stack != []:
         cell_pair: tuple[Cell, Cell] = stack.pop()
         cell: Cell = cell_pair[0]
