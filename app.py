@@ -10,6 +10,7 @@ maze : Maze = Maze(15, 'maze')
 routes : list[list[tuple[int, int]]] = []
 maze.generate_maze()
 
+# returns the data of the maze in a JSON format
 @app.route('/rendermaze', methods=['GET'])
 def render_maze():
     maze_data = [[{
@@ -21,6 +22,7 @@ def render_maze():
     } for cell in row] for row in maze.cell_matrix]
     return jsonify({'maze': maze_data})
 
+# saves the maze in a file
 @app.route('/savemaze', methods=['POST'])
 def save_maze():
     maze_name = request.json.get('name')
@@ -30,6 +32,7 @@ def save_maze():
         return jsonify({'status': 'success', 'message': 'Maze saved successfully.'})
     return jsonify({'status': 'error', 'message': 'Error saving the maze.'})
 
+# loads a maze from a file
 @app.route('/loadmaze', methods=['POST'])
 def load_maze():
     maze_name = request.json.get('name')
@@ -39,12 +42,14 @@ def load_maze():
         return jsonify({'status': 'success', 'message': 'Maze loaded successfully.'})
     return jsonify({'status': 'error', 'message': 'Error loading the maze.'})
 
+# returns the list of mazes available
 @app.route('/listmazes', methods=['GET'])
 def list_mazes():
     mazes_dir = 'src/mazes'
     mazes = [f.split('.')[0] for f in os.listdir(mazes_dir) if f.endswith('.txt')]
     return jsonify({'mazes': mazes})
 
+# generates a new maze with the given size
 @app.route('/generatemaze', methods=['POST'])
 def generate_maze():
     global maze
@@ -58,12 +63,15 @@ def generate_maze():
     maze.generate_maze()
     return jsonify({'status': 'success', 'message': 'Maze generated successfully.'})
 
+# unvisits all cells in the maze
 @app.route('/unvisitall', methods=['POST'])
 def unvisit_all():
     global maze
     maze.unvisit_all()
     return jsonify({'status': 'success', 'message': 'All cells unvisited.'})
 
+# solves the maze using the selected algorithm
+# and returns the routes and states
 @app.route('/solvemaze', methods=['POST'])
 def solve_by_brute_force():
     global maze
@@ -87,7 +95,7 @@ def solve_by_brute_force():
         return jsonify({'status': 'error', 'message': 'No routes found.'})
     return jsonify({'status': 'success', 'solutions': routes, 'states': states})
 
-
+# the main route of the application
 @app.route('/')
 def index():
     return render_template('index.html')

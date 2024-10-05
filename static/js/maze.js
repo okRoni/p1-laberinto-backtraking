@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('process-button').disabled = true;
 });
 
+/**
+ * Fetch the maze from the server and update the maze variable
+ */
 function fetchAndUpdateMaze() {
     fetch('/rendermaze')
     .then(response => response.json())
@@ -27,7 +30,11 @@ function fetchAndUpdateMaze() {
     });
 }
 
-// Update the maze in the maze-container element
+/**
+ * Render the maze on the screen
+ * @param {Array} paths - The paths to render (default to solutions)
+ * @param {Number} pathIndex - The index of the path to render (default to solutionIndex)
+ */
 function renderMaze(paths = solutions, pathIndex = solutionIndex) {
     const container = document.querySelector('.maze-container');
     const mazeElement = document.createElement('div');
@@ -116,6 +123,11 @@ function renderMaze(paths = solutions, pathIndex = solutionIndex) {
     container.appendChild(mazeElement);
 }
 
+/**
+ * Show the process of solving the maze
+ * This function will render the maze at each step of the process
+ * The steps are stored in the states variable
+ */
 function showProcess() {
     setAllImputsDisable(true);
     inProcess = true;
@@ -135,6 +147,9 @@ function showProcess() {
     }, states.length * delayMilliSeconds);
 }
 
+/**
+ * Finish the process of solving the maze
+ */
 function finishProcess() {
     for (const timeoutId of timeoutIds) {
         clearTimeout(timeoutId);
@@ -146,6 +161,10 @@ function finishProcess() {
     ChangeProcessButton();
 }
 
+/**
+ * Disable or enable all inputs in the page
+ * @param {Boolean} value - True to disable all inputs, false to enable them
+ */
 function setAllImputsDisable(value) {
     const buttons = document.getElementsByTagName('button');
     for (let i = 0; i < buttons.length; i++) {
@@ -162,6 +181,9 @@ function setAllImputsDisable(value) {
     }
 }
 
+/**
+ * Change the text of the process button
+ */
 function ChangeProcessButton() {
     const processButton = document.getElementById('process-button');
     if (inProcess) {
@@ -171,6 +193,9 @@ function ChangeProcessButton() {
     }
 }
 
+/**
+ * Handle the click event of the process button
+ */
 function handleProcessButton() {
     if (inProcess) { // stop the process
         finishProcess();
@@ -179,11 +204,18 @@ function handleProcessButton() {
     }
 }
 
+/**
+ * Clear the start and end points
+ */
 function clearStartEnd() {
     startPoint = null;
     endPoint = null;
 };
 
+
+/**
+ * Generate a new maze
+ */
 function generateMaze() {
     let size = document.getElementById('maze-size').value;
     fetch('/generatemaze', {
@@ -207,6 +239,12 @@ function generateMaze() {
     });
 }
 
+/**
+ * Handle the click event of a cell
+ * @param {Event} event - The click event
+ * @param {Number} x - The column of the cell
+ * @param {Number} y - The row of the cell
+ */
 function handleCellClick(event, x, y) {
     if (inProcess) {
         return;
@@ -214,6 +252,9 @@ function handleCellClick(event, x, y) {
     showMenu(event.clientX, event.clientY, x, y);
 }
 
+/**
+ * Show the context menu to set the start or end point
+ */
 function showMenu(mouseX, mouseY, cellX, cellY) {
     const existingMenu = document.querySelector('.menu');
     if (existingMenu) {
@@ -248,6 +289,9 @@ function showMenu(mouseX, mouseY, cellX, cellY) {
     document.body.appendChild(menu);
 }
 
+/**
+ * Solve the maze using the selected algorithm
+ */
 function solveMaze() {
     if (!startPoint || !endPoint) {
         alert('Please set both start and end points.');
@@ -297,6 +341,9 @@ function solveMaze() {
     });
 }
 
+/**
+ * Populate the solution dropdown with the available solutions
+ */
 function populateSolutionDropdown() {
     const solutionDropdown = document.getElementById('solution-dropdown');
     solutionDropdown.innerHTML = '<option value="-1">No solution</option>';
@@ -313,12 +360,18 @@ function populateSolutionDropdown() {
     solutionDropdown.value = solutionIndex;
 }
 
+/**
+ * Show the selected solution
+ */
 function showSolution() {
     const solutionDropdown = document.getElementById('solution-dropdown');
     solutionIndex = parseInt(solutionDropdown.value);
     renderMaze();
 }
 
+/**
+ * saves the maze with the given name
+ */
 function saveMaze() {
     const mazeName = document.getElementById('maze-name').value;
     fetch('/savemaze', {
@@ -341,6 +394,9 @@ function saveMaze() {
     });
 }
 
+/**
+ * load the maze with the given name
+ */
 function loadMaze() {
     const mazeName = document.getElementById('maze-name').value;
     fetch('/loadmaze', {
@@ -363,6 +419,9 @@ function loadMaze() {
     });
 }
 
+/**
+ * fetch the list of saved mazes and update the saved mazes list
+ */
 function listMazes() {
     fetch('/listmazes')
     .then(response => response.json())
@@ -384,6 +443,9 @@ function listMazes() {
     });
 }
 
+/**
+ * clear the solutions and the states
+ */
 function clearSolutions() {
     solutionIndex = -1;
     renderMaze();
@@ -393,16 +455,22 @@ function clearSolutions() {
     document.getElementById('process-button').disabled = true;
 }
 
+/**
+ * Open the load modal
+ */
 function openLoadModal() {
     document.getElementById('load-modal').style.display = 'block';
     listMazes();
 }
 
+/**
+ * Close the load modal
+ */
 function closeLoadModal() {
     document.getElementById('load-modal').style.display = 'none';
 }
 
-// Close the modal when the user clicks outside of it
+// When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
     const modal = document.getElementById('load-modal');
     if (event.target == modal) {
