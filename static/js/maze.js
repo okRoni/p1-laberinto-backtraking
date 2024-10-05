@@ -208,6 +208,9 @@ function generateMaze() {
 }
 
 function handleCellClick(event, x, y) {
+    if (inProcess) {
+        return;
+    }
     showMenu(event.clientX, event.clientY, x, y);
 }
 
@@ -252,6 +255,7 @@ function solveMaze() {
     }
     clearSolutions();
     setAllImputsDisable(true);
+    inProcess = true;
     
     document.body.style.cursor = 'wait';
 
@@ -281,14 +285,15 @@ function solveMaze() {
         }
         setAllImputsDisable(false);
         
-        // Reset the pointer to default state
         document.body.style.cursor = 'default';
+        inProcess = false;
     })
     .catch(error => {
         alert('An error occurred while solving the maze.');
         setAllImputsDisable(false);
 
         document.body.style.cursor = 'default';
+        inProcess = false;
     });
 }
 

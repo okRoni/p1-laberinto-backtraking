@@ -53,7 +53,7 @@ def generate_maze():
         return jsonify({'status': 'error', 'message': 'Invalid maze size.'})
     maze_size = int(maze_size)
     if maze_size < 5 or maze_size > 50:
-        return jsonify({'status': 'error', 'message': 'Maze size must be at least 5.'})
+        return jsonify({'status': 'error', 'message': 'Maze size must be between 5 and 50.'})
     maze = Maze(int(maze_size), 'maze')
     maze.generate_maze()
     return jsonify({'status': 'success', 'message': 'Maze generated successfully.'})
