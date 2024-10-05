@@ -251,6 +251,10 @@ function solveMaze() {
         return;
     }
     clearSolutions();
+    setAllImputsDisable(true);
+    
+    document.body.style.cursor = 'wait';
+
     fetch('/solvemaze', {
         method: 'POST',
         headers: {
@@ -275,6 +279,16 @@ function solveMaze() {
         } else {
             alert(data.message);
         }
+        setAllImputsDisable(false);
+        
+        // Reset the pointer to default state
+        document.body.style.cursor = 'default';
+    })
+    .catch(error => {
+        alert('An error occurred while solving the maze.');
+        setAllImputsDisable(false);
+
+        document.body.style.cursor = 'default';
     });
 }
 
