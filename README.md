@@ -1,36 +1,38 @@
-## Quickstart in terminal
+# Proyecto 1: Laberinto
 
-Clone the repository:
+## Inicio rápido!
+
+Clonar el repositorio:
 
 ```shell
 git clone https://github.com/OkRoni/p1-laberinto-backtraking.git
 ```
 
-Navigate into the project directory:
+navegar al directorio del proyecto:
 
 ```shell
-cd my_flask_project
+cd p1-laberinto-backtraking
 ```
 
-Set up a virtual environment:
+Configurar un entorno virtual de python:
 
 ```shell
 python -m venv venv
 ```
 
-Activate the virtual environment:
+Activar el entorno virtual:
 
 ```shell
 .\venv\Scripts\activate
 ```
 
-Install the dependencies:
+Instalar las dependecias:
 
 ```shell
 pip install -r requirements.txt
 ```
 
-Run the Flask application:
+Ejecutar la aplicación:
 
 ```shell
 python app.py
