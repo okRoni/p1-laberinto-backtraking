@@ -43,7 +43,7 @@ def get_routes(maze: Maze, start: Location, end: Location,
     """
 
     routes: list[Route] = []
-    states: list[State] = [maze.get_state()]
+    states: list[State] = []
     # This algorithm needs to know from which cell every cell is visited.
     # The root cell is defined just to be the cell from which the start
     # cell is visited.
@@ -66,10 +66,10 @@ def get_routes(maze: Maze, start: Location, end: Location,
         cell_pair: tuple[Cell, Cell] = stack.pop()
         cell: Cell = cell_pair[0]
         cell.visited = True
-        states.append(maze.get_state())
         cell_location: Location = (cell.row, cell.column)
         cell.previous = previous
         previous = cell
+        states.append(build_route(maze, cell_location))
 
         if cell_location == end:
             routes.append(build_route(maze, end))

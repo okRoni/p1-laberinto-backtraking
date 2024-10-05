@@ -51,6 +51,14 @@ body {
     border: 1px solid #888;
 }
 
+.header button:disabled,
+.header select:disabled,
+.header input:disabled {
+    background-color: #333;
+    color: #999;
+    cursor: not-allowed;
+}
+
 #maze-size {
     width: 40px;
 }

@@ -3,111 +3,180 @@ let endPoint = null;
 // start and end would be a an object with row and column properties
 let solutions = [];
 let solutionIndex = -1;
+let states = [];
+let maze = [];
+let inProcess = false;
+let timeoutIds = []; // to stop the process later!
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderMaze();
+    fetchAndUpdateMaze();
     listMazes();
     populateSolutionDropdown();
+    document.getElementById('process-button').disabled = true;
 });
 
-// Update the maze in the maze-container element
-function renderMaze() {
+function fetchAndUpdateMaze() {
     fetch('/rendermaze')
     .then(response => response.json())
     .then(data => {
-        const container = document.querySelector('.maze-container');
-        const mazeData = data.maze;
-        const mazeElement = document.createElement('div');
-        mazeElement.classList.add('maze');
-    
-        for (let row = 0; row < mazeData.length; row++) {
-            const rowElement = document.createElement('div');
-            rowElement.classList.add('maze-line');
-    
-            for (let column = 0; column < mazeData[row].length; column++) {
-                const cell = mazeData[row][column];
-                const cellElement = document.createElement('div');
-                cellElement.classList.add('cell');
-                if (cell.up) cellElement.classList.add('up');
-                if (cell.down) cellElement.classList.add('down');
-                if (cell.left) cellElement.classList.add('left');
-                if (cell.right) cellElement.classList.add('right');
-    
-                if (cell.visited) {
-                    const pathElement = document.createElement('div');
-                    pathElement.classList.add('path');
-                    cellElement.appendChild(pathElement);
-                }
-
-                // Check if the current cell is part of the solution
-                // If it is, add a correspoding path element to the cell
-                // depending of the direction based on the previous and next cells
-                if (solutionIndex > -1) {
-                    currentCellIndex = solutions[solutionIndex].slice(1, -1)
-                        .findIndex(cell => cell[0] === row && cell[1] === column) + 1;
-                        // we add 1 because the first cell is not part of the solution
-                    if (currentCellIndex > 0) { // we skip the first cell
-                        // here we add 2 path elements to the cell
-                        // one for the previous cell and one for the next cell
-                        // this is to create the illusion of a continuous path
-                        const previousPathElement = document.createElement('div');
-                        previousPathElement.classList.add('path');
-                        previousPathElement.classList.add('previous-path');
-                        const nextPathElement = document.createElement('div');
-                        nextPathElement.classList.add('path');
-                        nextPathElement.classList.add('next-path');
-
-                        const previousCell = solutions[solutionIndex][currentCellIndex - 1];
-                        const nextCell = solutions[solutionIndex][currentCellIndex + 1];
-
-                        if (previousCell[0] === row && previousCell[1] === column - 1) {
-                            previousPathElement.classList.add('right-path');
-                        } else if (previousCell[0] === row && previousCell[1] === column + 1) {
-                            previousPathElement.classList.add('left-path');
-                        } else if (previousCell[0] === row - 1 && previousCell[1] === column) {
-                            previousPathElement.classList.add('up-path');
-                        } else if (previousCell[0] === row + 1 && previousCell[1] === column) {
-                            previousPathElement.classList.add('down-path');
-                        }
-
-                        if (nextCell[0] === row && nextCell[1] === column - 1) {
-                            nextPathElement.classList.add('right-path');
-                        } else if (nextCell[0] === row && nextCell[1] === column + 1) {
-                            nextPathElement.classList.add('left-path');
-                        } else if (nextCell[0] === row - 1 && nextCell[1] === column) {
-                            nextPathElement.classList.add('up-path');
-                        } else if (nextCell[0] === row + 1 && nextCell[1] === column) {
-                            nextPathElement.classList.add('down-path');
-                        }
-
-                        cellElement.appendChild(previousPathElement);
-                        cellElement.appendChild(nextPathElement);
-                    }
-                }
-
-                if (startPoint && startPoint.column === column && startPoint.row === row) {
-                    const startElement = document.createElement('div');
-                    startElement.classList.add('start');
-                    cellElement.appendChild(startElement);
-                }
-
-                if (endPoint && endPoint.column === column && endPoint.row === row) {
-                    const endElement = document.createElement('div');
-                    endElement.classList.add('end');
-                    cellElement.appendChild(endElement);
-                }
-
-                cellElement.addEventListener('click', (event) => handleCellClick(event, column, row));
-    
-                rowElement.appendChild(cellElement);
-            }
-    
-            mazeElement.appendChild(rowElement);
+        maze = data.maze;
+        renderMaze();
+        if (solutions.length = 0) {
+            document.getElementById('process-button').disabled = true;
         }
-    
-        container.innerHTML = '';
-        container.appendChild(mazeElement);
     });
+}
+
+// Update the maze in the maze-container element
+function renderMaze(paths = solutions, pathIndex = solutionIndex) {
+    const container = document.querySelector('.maze-container');
+    const mazeElement = document.createElement('div');
+    mazeElement.classList.add('maze');
+
+    for (let row = 0; row < maze.length; row++) {
+        const rowElement = document.createElement('div');
+        rowElement.classList.add('maze-line');
+
+        for (let column = 0; column < maze[row].length; column++) {
+            const cell = maze[row][column];
+            const cellElement = document.createElement('div');
+            cellElement.classList.add('cell');
+            if (cell.up) cellElement.classList.add('up');
+            if (cell.down) cellElement.classList.add('down');
+            if (cell.left) cellElement.classList.add('left');
+            if (cell.right) cellElement.classList.add('right');
+
+            // Check if the current cell is part of the path
+            // If it is, add a correspoding path element to the cell
+            // depending of the direction based on the previous and next cells
+            if (pathIndex > -1) {
+                currentCellIndex = paths[pathIndex].slice(1, -1)
+                    .findIndex(cell => cell[0] === row && cell[1] === column) + 1;
+                    // we add 1 because the first cell is not part of the solution
+                if (currentCellIndex > 0) { // we skip the first cell
+                    // here we add 2 path elements to the cell
+                    // one for the previous cell and one for the next cell
+                    // this is to create the illusion of a continuous path
+                    const previousPathElement = document.createElement('div');
+                    previousPathElement.classList.add('path');
+                    previousPathElement.classList.add('previous-path');
+                    const nextPathElement = document.createElement('div');
+                    nextPathElement.classList.add('path');
+                    nextPathElement.classList.add('next-path');
+
+                    const previousCell = paths[pathIndex][currentCellIndex - 1];
+                    const nextCell = paths[pathIndex][currentCellIndex + 1];
+
+                    if (previousCell[0] === row && previousCell[1] === column - 1) {
+                        previousPathElement.classList.add('right-path');
+                    } else if (previousCell[0] === row && previousCell[1] === column + 1) {
+                        previousPathElement.classList.add('left-path');
+                    } else if (previousCell[0] === row - 1 && previousCell[1] === column) {
+                        previousPathElement.classList.add('up-path');
+                    } else if (previousCell[0] === row + 1 && previousCell[1] === column) {
+                        previousPathElement.classList.add('down-path');
+                    }
+
+                    if (nextCell[0] === row && nextCell[1] === column - 1) {
+                        nextPathElement.classList.add('right-path');
+                    } else if (nextCell[0] === row && nextCell[1] === column + 1) {
+                        nextPathElement.classList.add('left-path');
+                    } else if (nextCell[0] === row - 1 && nextCell[1] === column) {
+                        nextPathElement.classList.add('up-path');
+                    } else if (nextCell[0] === row + 1 && nextCell[1] === column) {
+                        nextPathElement.classList.add('down-path');
+                    }
+
+                    cellElement.appendChild(previousPathElement);
+                    cellElement.appendChild(nextPathElement);
+                }
+            }
+
+            if (startPoint && startPoint.column === column && startPoint.row === row) {
+                const startElement = document.createElement('div');
+                startElement.classList.add('start');
+                cellElement.appendChild(startElement);
+            }
+
+            if (endPoint && endPoint.column === column && endPoint.row === row) {
+                const endElement = document.createElement('div');
+                endElement.classList.add('end');
+                cellElement.appendChild(endElement);
+            }
+
+            cellElement.addEventListener('click', (event) => handleCellClick(event, column, row));
+
+            rowElement.appendChild(cellElement);
+        }
+
+        mazeElement.appendChild(rowElement);
+    }
+
+    container.innerHTML = '';
+    container.appendChild(mazeElement);
+}
+
+function showProcess() {
+    setAllImputsDisable(true);
+    inProcess = true;
+    const processButton = document.getElementById('process-button');
+    processButton.disabled = false;
+    delayMilliSeconds = 16;
+    ChangeProcessButton();
+    for (let i = 0; i < states.length; i++) {
+        const timeoutId = setTimeout(() => {
+            renderMaze(states, i);
+        },i * delayMilliSeconds);
+        timeoutIds.push(timeoutId);
+    }
+    // when the process is done:
+    setTimeout(() => {
+        finishProcess();
+    }, states.length * delayMilliSeconds);
+}
+
+function finishProcess() {
+    for (const timeoutId of timeoutIds) {
+        clearTimeout(timeoutId);
+    }
+    timeoutIds = [];
+    setAllImputsDisable(false);
+    inProcess = false;
+    renderMaze();
+    ChangeProcessButton();
+}
+
+function setAllImputsDisable(value) {
+    const buttons = document.getElementsByTagName('button');
+    for (let i = 0; i < buttons.length; i++) {
+        console.log(buttons[i].textContent);
+        buttons[i].disabled = value;
+    }
+    const dropdowns = document.getElementsByTagName('select');
+    for (let i = 0; i < dropdowns.length; i++) {
+        dropdowns[i].disabled = value;
+    }
+    const inputs = document.getElementsByTagName('input');
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].disabled = value;
+    }
+}
+
+function ChangeProcessButton() {
+    const processButton = document.getElementById('process-button');
+    if (inProcess) {
+        processButton.textContent = 'Cancel';
+    } else {
+        processButton.textContent = 'Show steps';
+    }
+}
+
+function handleProcessButton() {
+    if (inProcess) { // stop the process
+        finishProcess();
+    } else { // start the process
+        showProcess();
+    }
 }
 
 function clearStartEnd() {
@@ -129,7 +198,7 @@ function generateMaze() {
         if (data.status === 'success') {
             clearStartEnd();
             clearSolutions();
-            renderMaze();
+            fetchAndUpdateMaze();
         } else {
             alert(data.message);
             document.getElementById('maze-size').value = '';
@@ -199,8 +268,10 @@ function solveMaze() {
         if (data.status === 'success') {
             solutions = data.solutions;
             solutionIndex = 0;
+            states = data.states;
             populateSolutionDropdown();
             showSolution();
+            document.getElementById('process-button').disabled = false;
         } else {
             alert(data.message);
         }
@@ -263,7 +334,7 @@ function loadMaze() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            renderMaze();
+            fetchAndUpdateMaze();
         } else {
             alert(data.message);
         }

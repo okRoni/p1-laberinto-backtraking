@@ -68,6 +68,7 @@ def unvisit_all():
 def solve_by_brute_force():
     global maze
     global routes
+    global states
     maze.unvisit_all()
     start = (request.json.get('start')['row'], request.json.get('start')['column'])
     end = (request.json.get('end')['row'], request.json.get('end')['column'])
@@ -75,12 +76,16 @@ def solve_by_brute_force():
     if start is None or end is None:
         return jsonify({'status': 'error', 'message': 'Invalid start or end cell.'})
     if algorithm == 'a-star':
-        routes = get_routes(maze, start, end, True)
+        result = get_routes(maze, start, end, True)
+        routes = result[0]
+        states = result[1]
     else:
-        routes = get_routes(maze, start, end, False)
+        result = get_routes(maze, start, end, False)
+        routes = result[0]
+        states = result[1]
     if routes == []:
         return jsonify({'status': 'error', 'message': 'No routes found.'})
-    return jsonify({'status': 'success', 'solutions': routes})
+    return jsonify({'status': 'success', 'solutions': routes, 'states': states})
 
 
 @app.route('/')
